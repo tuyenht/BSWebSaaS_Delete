@@ -1,0 +1,13 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back, {{name}}"
+  },
+  "navigation": {
+    "tenants": "Tenants",
+    "sites": "Sites",
+    "themes": "Themes"
+  }
+}
+
+

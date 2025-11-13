@@ -1,0 +1,14 @@
+{
+  "app": {
+    "name": "BSWebSaaS"
+  },
+  "actions": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "close": "Đóng"
+  },
+  "messages": {
+    "unknownSection": "Mục nội dung {{key}} chưa được hỗ trợ."
+  }
+}
+

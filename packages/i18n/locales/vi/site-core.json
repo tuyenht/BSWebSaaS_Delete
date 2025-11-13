@@ -1,0 +1,13 @@
+{
+  "navigation": {
+    "home": "Trang chủ",
+    "services": "Dịch vụ",
+    "projects": "Dự án",
+    "contact": "Liên hệ"
+  },
+  "footer": {
+    "rights": "© {{year}} {{brand}}. Bảo lưu mọi quyền."
+  }
+}
+
+

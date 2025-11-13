@@ -1,0 +1,9 @@
+{
+  "name": "saas-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.10.0",
+  "scripts": {
+    "dev": "pnpm --filter saas-app dev",
+    "build": "pnpm --filter saas-app build"
+  }
+}

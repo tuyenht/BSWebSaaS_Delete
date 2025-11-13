@@ -1,0 +1,19 @@
+{
+  "name": "@bsweb/cms",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./collections": "./collections/index.ts",
+    "./collections/*": "./collections/*.ts"
+  },
+  "peerDependencies": {
+    "payload": ">=3.63.0"
+  }
+}
+
+
+
+

@@ -1,0 +1,16 @@
+{
+  "name": "@bsweb/i18n",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./config": "./config/i18n-config.ts",
+    "./config/locales": "./config/locales.ts",
+    "./lib/loadNamespaces": "./lib/loadNamespaces.ts",
+    "./lib/types": "./lib/types.ts"
+  }
+}
+
+

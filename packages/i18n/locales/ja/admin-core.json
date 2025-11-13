@@ -1,0 +1,13 @@
+{
+  "dashboard": {
+    "title": "ダッシュボード",
+    "welcome": "{{name}}さん、お帰りなさい"
+  },
+  "navigation": {
+    "tenants": "テナント",
+    "sites": "サイト",
+    "themes": "テーマ"
+  }
+}
+
+

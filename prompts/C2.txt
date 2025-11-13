@@ -1,0 +1,23 @@
+#Prompt ngắn mỗi khi anh giao việc trong Cursor
+
+Task: [mô tả ngắn gọn bằng tiếng Việt, ví dụ:
+"Thêm kiểm tra giới hạn số lượng site theo BillingPlan.maxSites khi tạo site mới"]
+
+Context:
+- Repo root: D:\BSWebSaaS
+- Liên quan các phần:
+  - [liệt kê file / thư mục chính nếu anh biết, ví dụ: packages/cms/collections/Sites.ts, packages/cms/collections/BillingPlans.ts, packages/shared/billing/limits.ts]
+- Docs cần bám:
+  - docs/SCHEMA-MASTER.md
+  - docs/BILLING.md
+  - docs/TESTING-STRATEGY.md
+
+Yêu cầu:
+- Tuân thủ multi-tenant, RBAC, i18n.
+- Code TypeScript/TSX, chuẩn sản xuất, đúng kiến trúc hiện tại.
+- Nếu cần thay đổi schema, note rõ cần migration.
+
+Đầu ra mong muốn:
+- Đưa ra các thay đổi code với ĐẦY ĐỦ file path + code block cuối cùng.
+- Thêm hoặc sửa test tương ứng (unit / integration / e2e nếu hợp lý).
+- Giải thích ngắn gọn bằng tiếng Việt logic xử lý và flow.

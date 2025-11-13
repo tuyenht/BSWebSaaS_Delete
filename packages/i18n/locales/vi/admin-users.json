@@ -1,0 +1,17 @@
+{
+  "list": {
+    "title": "Người dùng",
+    "empty": "Chưa có người dùng nào."
+  },
+  "form": {
+    "email": {
+      "label": "Email",
+      "placeholder": "nhap@tenmien.com"
+    },
+    "role": {
+      "label": "Vai trò"
+    }
+  }
+}
+
+

@@ -1,0 +1,9 @@
+{
+  "format": {
+    "shortDate": "YYYY/MM/DD",
+    "longDate": "YYYY年MM月DD日",
+    "time": "HH:mm"
+  }
+}
+
+

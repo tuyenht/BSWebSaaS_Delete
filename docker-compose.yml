@@ -1,0 +1,95 @@
+version: "3.9"
+
+services:
+  app:
+    # Dev/staging container chạy Next.js + Payload trong cùng process
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - node_modules:/app/node_modules
+      - pnpm-store:/root/.local/share/pnpm/store/v3
+    command:
+      - sh
+      - -lc
+      - |
+        corepack enable pnpm
+        pnpm install --frozen-lockfile
+        pnpm dev
+    # Nếu muốn chỉ chạy riêng app saas, dùng:
+    # command: ["pnpm", "--filter", "saas-app", "dev"]
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-change-me-super-long-secret}
+      PAYLOAD_CACHE_TAGS: "true"
+      CI: "true"
+
+      # Database & Redis
+      DATABASE_URI: ${DATABASE_URI:-postgresql://${POSTGRES_USER:-bsweb_owner}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-db}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-bsweb_saas}}
+      REDIS_URL: redis://redis:6379/0
+
+      # (Tuỳ chọn) AI global key – site nào không có key riêng sẽ dùng key này
+      # GLOBAL_OPENAI_API_KEY: ${GLOBAL_OPENAI_API_KEY:-""}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  db:
+    image: postgres:16-alpine
+    container_name: bsweb-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-bsweb_saas}
+      POSTGRES_USER: ${POSTGRES_USER:-bsweb_owner}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required (set in your .env file)}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bsweb_owner} -d ${POSTGRES_DB:-bsweb_saas} -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: bsweb-redis
+    command: ["redis-server", "--maxmemory", "512mb", "--maxmemory-policy", "allkeys-lru"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+
+  # Prometheus & Grafana có thể bật sau khi app ổn định
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   volumes:
+  #     - ./infra/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #   command:
+  #     - "--config.file=/etc/prometheus/prometheus.yml"
+  #   ports:
+  #     - "9090:9090"
+  #   depends_on:
+  #     - app
+  #
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   ports:
+  #     - "3001:3000"
+  #   volumes:
+  #     - ./data/grafana:/var/lib/grafana
+  #   depends_on:
+  #     - prometheus
+
+networks:
+  default:
+    name: bsweb-network
+
+volumes:
+  node_modules:
+  pnpm-store:

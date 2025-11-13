@@ -1,0 +1,391 @@
+## 1. CHẠY TẠO CHECKPOINT TẠI HỘP THOẠI CŨ
+##-------------------------------------------
+
+## 1.2 Version 2
+##-------------------------------------------
+# 🧱 [AUTO CREATE CHECKPOINT SNAPSHOT – SaaS Edition]
+
+Bạn là ChatGPT (GPT-5), đóng vai **Technical Project Recorder & SaaS System Architect**.
+
+Bối cảnh:
+- Dự án: **"Xây dựng dự án website SaaS đa tenant với Next.js 16 + Payload 3.63.0"**.
+- Hội thoại hiện tại chứa rất nhiều quyết định kiến trúc, module, schema, tối ưu hiệu năng, bảo mật, DevOps, UX/UI...
+
+🎯 Nhiệm vụ chính:
+Hãy tự động **quét toàn bộ hội thoại hiện tại** và xuất ra một **Checkpoint Snapshot** hoàn chỉnh, súc tích, có thể dùng làm “điểm khôi phục” (restore point) cho các phiên làm việc sau.
+
+---
+
+## [CHECKPOINT SNAPSHOT]
+
+Phase: [Tự động xác định giai đoạn / phase hiện tại dựa trên nội dung và tiến độ, ví dụ:
+- "Phase 3 – Content & Theme Architecture"
+- "Phase 4 – CMS Implementation & Frontend Integration"
+- "Phase 5 – Hardening, Export & DevOps"
+]
+
+Version: [Tự động tạo, ví dụ: `v3.x – YYYY-MM-DD` (theo ngày hiện tại, có thể thêm suffix nhỏ nếu cần: `v3.4 – 2025-11-10`)]
+
+---
+
+### 1️⃣ Tech Stack (auto-detected, chỉ liệt kê thứ có liên quan)
+
+- **Runtime / Framework**
+  - Next.js 16.x (App Router, React Server Components, Turbopack, Partial Pre-Rendering, Cache Tags)
+  - Payload CMS 3.63.0 (Next-native integration, KV, Jobs)
+  - Node.js ≥ 20.x
+
+- **Database & Storage**
+  - PostgreSQL (multi-tenant friendly)
+  - KV: Redis (production), Database / in-memory (development)
+  - Storage: Local disk / S3-compatible thông qua Payload Upload + custom path strategy
+
+- **Frontend**
+  - React 19.x
+  - Tailwind CSS
+  - shadcn/ui
+  - Framer Motion
+  - Custom theme system (light/dark, primary color palette, responsive layout, animation presets)
+
+- **Auth & Security**
+  - Payload Auth (multi-tenant + per-site roles)
+  - Social login (Google / Facebook / …) với high-risk 2FA cho hành động nhạy cảm
+  - CSRF / Rate limiting / Honeypot cho form & login
+  - Security headers + CSP cơ bản
+
+- **DevOps & Infra**
+  - Docker / Docker Compose
+  - Monorepo với Turborepo
+  - Healthcheck `/healthz`, logging JSON, metrics `/metrics`
+  - Export Standalone bundle cho từng site
+
+- **Các công nghệ / module khác đã được nhắc tới trong hội thoại**
+  - [Tự động bổ sung: ví dụ Assistant/AI layer, Automation Rules, Observability stack, … nếu đã bàn]
+
+> Chỉ liệt kê các thành phần thực sự đã được đề cập; không bịa thêm.
+
+---
+
+### 2️⃣ Features & Modules Summary (tự động tổng hợp)
+
+Hãy nhóm và liệt kê đầy đủ các **feature / module / hệ thống** đã được bàn luận trong hội thoại, theo block rõ ràng.  
+Mỗi bullet nên ghi rõ: **đã có tới mức nào** (idea / design / skeleton code / ready-to-implement).
+
+Gợi ý nhóm (chỉ dùng nếu có trong hội thoại):
+
+#### 2.1. SaaS Multi-tenant & Domain Routing
+- Tenant / Site model (mỗi khách hàng có thể có nhiều site).
+- Domain mapping: subdomain + custom domain → site.
+- Multi-tenant isolation: data, media, config per site.
+- Export 1 site thành Standalone (code + data tách rời SaaS).
+
+#### 2.2. Auth, RBAC & Workflow
+- Role system:
+  - `saasOwner`, `saasAdmin`
+  - `siteOwner`, `siteAdmin`, `siteEditor`, `siteTranslator`, `siteViewer`
+- Workflow content:
+  - Draft → Pending → Published (+ khả năng custom step trung gian do saasOwner cấu hình).
+  - Quy định khi quyền workflow của user thấp hơn tài liệu thì chỉ được xem, không được sửa.
+- Quyền Export:
+  - Mặc định `siteOwner` / `siteAdmin` **không** được export, chỉ khi saasOwner cấp quyền.
+
+#### 2.3. I18n & Ngôn ngữ
+- Phân biệt rõ:
+  - **Ngôn ngữ website** (site locales, có license, slug theo locale).
+  - **Ngôn ngữ giao diện quản trị** (adminLanguage per user, đọc từ file `.json`).
+- SiteLocales:
+  - Bật/tắt per locale theo license (`isPaid`).
+  - Slug mapping per locale: `/tin-tuc`, `/du-an`, `/tuyen-dung`, `/san-pham`, `/news`, `/projects`, `/careers`, `/products`...
+- Admin i18n:
+  - File `admin.vi.json`, `admin.en.json`, … auto-detect.
+  - Toàn bộ label admin, error, NotFound, GlobalError, v.v. dùng i18n, không hard-code.
+
+#### 2.4. Content Model & Theme System
+- Collections chính:
+  - Tenants, Sites, Themes, Industries, DemoContentSets
+  - Taxonomies, Posts (news/project/job/...), Products
+  - Pages + Blocks (section-based page builder)
+  - Settings, ThemeSettings, AiSettings, ThemeOverrides
+  - ContentAttributes (custom flags/attributes)
+  - Media, Forms, Leads
+  - SearchIndex, AuditEvents, Extensions, SiteExtensions
+- Theme:
+  - Theme `company-industrial` với `theme.config.ts`, pageBlueprints, section default.
+  - Theme base trong `packages/themes`, auto-sync vào collection `themes`.
+- Page builder & Blocks:
+  - Hero, ServicesGrid, CapabilitiesGrid, FeaturedProjectsCarousel, NewsTabs, PartnersCarousel, CTA, Form...
+  - Visibility per device (Desktop/Tablet/Mobile), layoutType (row/grid/slider), animation presets.
+  - Responsive 100% cho tất cả section (desktop/tablet/mobile dọc & ngang).
+
+#### 2.5. SEO, Search, Preview & Staging
+- SEO:
+  - Tự động meta title/description/og từ nội dung (không bắt nhập tay).
+  - JSON-LD cho Article/NewsArticle/JobPosting/Product.
+  - Sitemap.xml per site/locale, RSS feed tin tức.
+- Search:
+  - Collection `search-index` nhỏ gọn, index riêng cho posts/products/pages.
+  - Route `/search` theo `site + locale`, nhóm kết quả theo loại (Tin tức / Dự án / Tuyển dụng / Sản phẩm / Trang).
+- Preview & Staging:
+  - Preview token (JWT) ngắn hạn + `/api/preview` + draftMode.
+  - Staging domain per site (nếu có), preview đúng slug + locale + domain.
+
+#### 2.6. Forms, Leads & Automation
+- Form builder (Liên hệ / Tư vấn / Báo giá / Tuyển dụng…).
+- Leads collection + trạng thái lead (mới / đang xử lý / chốt / fail).
+- Rate limit + honeypot tránh spam.
+- (Nếu đã bàn) Automation rules: trigger onFormSubmit/onLeadCreated → email/webhook/assign.
+
+#### 2.7. Logging, Audit & Security
+- AuditEvents: ghi lại create/update/delete, publish, đổi quyền, login fail nhiều, export.
+- Logging JSON (có tenantId, siteId, userId) cho mọi action quan trọng.
+- Security:
+  - Rate limiting cho login, form, export.
+  - CSRF cho action nhạy cảm.
+  - Security headers + CSP.
+  - Upload policy (mime, size, path isolation per tenant/site).
+
+#### 2.8. DevOps, Export & Extension
+- Dev & CI/CD:
+  - Turborepo, script `dev`, `build`, `seed:demo`, `db:migrate`.
+  - Dockerfile, docker-compose, healthcheck `/healthz`.
+- Export Standalone:
+  - Service `exportSiteToBundle` + API `/api/sites/[siteId]/export` (role + rate limit).
+  - Bundle zip: code + data JSON + seed script + docker-compose cho standalone.
+- Extension / Marketplace skeleton:
+  - `extensions` + `site-extensions` + license/isPaid.
+  - Block registry `ext:*` để load block/theme ngoài.
+
+> Hãy chỉ liệt kê những module đã thực sự được bàn, và tóm tắt ngắn gọn mức độ chi tiết (Ý tưởng / Thiết kế / Skeleton code / Gần production).
+
+---
+
+### 3️⃣ Current Progress (tự động)
+
+Chia rõ thành 3 khối:
+
+- ✅ **Đã hoàn thành / chốt kiến trúc**  
+  - [Liệt kê các phần đã được chốt chắc: kiến trúc multi-tenant, theme system, i18n strategy, RBAC, export pipeline, v.v.]
+
+- 🧩 **Đang thiết kế / ở mức skeleton code**  
+  - [Liệt kê những phần đã có cấu trúc, service, loader nhưng chưa code full/hoặc chưa test.]
+
+- ⏳ **Chưa triển khai / để phase sau**  
+  - [Liệt kê những phần đã nhắc đến nhưng cố ý hoãn: Billing/Subscription, Analytics tích hợp, Marketplace UI, AI Assistant full, v.v.]
+
+---
+
+### 4️⃣ Core Files / Folders (auto-detected từ hội thoại)
+
+Liệt kê các đường dẫn quan trọng (monorepo style), ví dụ:
+
+- Monorepo:
+  - `/apps/saas` – SaaS Next 16 + Payload embed
+  - `/apps/standalone` – app cho site Standalone
+  - `/packages/cms` – Payload config & collections
+  - `/packages/frontend` – UI components, sections, SectionRenderer, layout utilities
+  - `/packages/themes/company-industrial` – Theme base
+  - `/packages/shared` – storage, cacheTags, logger, rateLimit, routing helpers
+
+- Next 16 & routing:
+  - `/apps/saas/app/proxy.ts` – Multi-tenant domain resolution (Host → Site)
+  - `/apps/saas/app/(site)/[...segments]/page.tsx` – Router động cho listing/detail/page
+  - `/apps/saas/app/img/[...path]/route.ts` – Dynamic image transform
+  - `/apps/saas/app/api/revalidate/route.ts` – Cache revalidation API route
+
+- Payload collections (chỉ liệt kê tên file, không cần full schema):
+  - `/packages/cms/collections/Users.ts`
+  - `/packages/cms/collections/Tenants.ts`
+  - `/packages/cms/collections/Sites.ts`
+  - `/packages/cms/collections/Themes.ts`
+  - `/packages/cms/collections/Taxonomies.ts`
+  - `/packages/cms/collections/Pages.ts`
+  - `/packages/cms/collections/Posts.ts`
+  - `/packages/cms/collections/Products.ts`
+  - `/packages/cms/collections/Settings.ts`
+  - `/packages/cms/collections/ThemeSettings.ts`
+  - `/packages/cms/collections/AiSettings.ts`
+  - `/packages/cms/collections/ThemeOverrides.ts`
+  - `/packages/cms/collections/ContentAttributes.ts`
+  - `/packages/cms/collections/Forms.ts`
+  - `/packages/cms/collections/Leads.ts`
+  - `/packages/cms/collections/SearchIndex.ts`
+  - `/packages/cms/collections/AuditEvents.ts`
+  - `/packages/cms/collections/Extensions.ts`
+  - `/packages/cms/collections/SiteExtensions.ts`
+
+- Services & shared utils:
+  - `/packages/cms/src/services/applyThemeToSite.ts`
+  - `/packages/cms/src/services/applyDemoContentForSite.ts`
+  - `/packages/cms/src/services/searchIndex.ts`
+  - `/packages/cms/src/services/audit.ts`
+  - `/packages/cms/src/services/cacheRevalidation.ts`
+  - `/packages/cms/src/services/exportSite.ts`
+  - `/packages/shared/storage.ts`
+  - `/packages/shared/cache.ts`
+  - `/packages/shared/cache/cacheTags.ts`
+  - `/packages/shared/cache/cacheKeys.ts`
+  - `/packages/shared/cache/redisClient.ts`
+  - `/packages/shared/rateLimit.ts`
+  - `/packages/shared/logger.ts`
+  - `/packages/shared/routing/paths.ts`
+  - `/packages/shared/routing/resolveSite.ts`
+  - `/packages/shared/assistant/assistantClient.ts`
+  - `/packages/shared/assistant/config.ts`
+  - `/packages/shared/auth/getAuthUser.ts`
+  - `/packages/shared/validation.ts`
+  - `/packages/shared/types.ts`
+
+> Hãy chỉ liệt kê những đường dẫn đã được nhắc tới hoặc hợp lý theo kiến trúc đã mô tả, tránh bịa thêm.
+
+---
+
+### 5️⃣ Notes & Next Steps (tự động trích từ hội thoại gần nhất)
+
+- Tóm tắt 3–7 ý quan trọng gần đây:
+  - Các quyết định kiến trúc mới được chốt.
+  - Các tối ưu đã áp dụng (performance, UX, security…).
+  - Các giới hạn/giả định hiện tại (vd: chưa làm Billing, chưa bật Analytics).
+
+- Đề xuất **2–5 ưu tiên kỹ thuật tiếp theo**, ví dụ:
+  - Bắt đầu implement full schema cho nhóm collection X.
+  - Triển khai frontend cho Y (listing/detail/search).
+  - Bổ sung test (unit/integration/E2E) cho module Z.
+  - Chuẩn bị doc/guide cho dev/team.
+
+---
+
+### ⚙️ Yêu cầu về OUTPUT & FILE
+
+1. **Bước 1 – In ra bản Markdown trong chat**  
+   - Định dạng đầy đủ như cấu trúc trên.  
+   - Dễ copy toàn bộ và dán sang phiên chat mới.
+
+2. **Bước 2 – Xuất file `.txt`**  
+   - Nếu môi trường có hỗ trợ tạo file (ví dụ có Python / file tool):
+     - Tạo file `.txt` chứa đúng nội dung Checkpoint Snapshot (không thêm giải thích).
+     - Đưa ra link download/file handle để tôi có thể tải về.
+   - Nếu **không** có khả năng tạo file:
+     - Hãy ghi rõ: *“Môi trường hiện tại không hỗ trợ tạo file, nhưng anh có thể copy toàn bộ Markdown ở trên để lưu lại.”*
+
+3. Sau khi xuất xong, **hãy kết thúc bằng một câu xác nhận rõ ràng**:
+   > “✅ Checkpoint Snapshot này có thể dùng làm điểm khôi phục (restore point) cho các phiên làm việc tiếp theo của dự án SaaS.”
+
+---
+
+❗ Quy tắc quan trọng:
+- **Không** thêm phân tích bên ngoài, chỉ trả về nội dung Checkpoint + thông tin file (nếu có).  
+- **Không** bịa thêm feature hoặc file chưa từng được nhắc tới hoặc không hợp lý với kiến trúc hiện tại.  
+- Ưu tiên ngắn gọn, súc tích, nhưng phải **đủ thông tin** để người khác đọc snapshot vẫn hiểu được bức tranh tổng thể dự án ở thời điểm này.
+
+
+
+## 1.1 Version 1
+##-------------------------------------------
+
+# 🧱 [AUTO CREATE CHECKPOINT SNAPSHOT – Stable Edition]
+
+Bạn là ChatGPT (GPT-5), đóng vai **Technical Project Recorder & SaaS Architect**.
+
+Nhiệm vụ:
+Tự động quét toàn bộ nội dung hội thoại hiện tại về **dự án “Xây dựng dự án website SaaS”**,  
+rồi xuất ra một **Checkpoint Snapshot** hoàn chỉnh theo format bên dưới:
+
+---
+
+## [CHECKPOINT SNAPSHOT]
+Phase: [Tự động xác định giai đoạn dựa trên tiến độ hiện tại]
+Version: [Tự động tạo, ví dụ: v2.x – {ngày hiện tại theo định dạng YYYY-MM-DD}]
+
+### Tech Stack:
+- Next.js 16.0.1 (App Router, RSC)
+- Payload 3.63.0
+- Node.js ≥ 20.9
+- KV: Redis (prod), Database/in-memory (dev)
+- Prisma ORM / PostgreSQL
+- TailwindCSS + shadcn/ui + Framer Motion
+- Các công nghệ hoặc module khác đã xuất hiện trong hội thoại (tự động bổ sung nếu có).
+
+### Features & Modules Summary (tự động tổng hợp):
+- Liệt kê đầy đủ các tính năng, module, hoặc giai đoạn đã thảo luận:
+  - [ ] Authentication & Role-based Access (User, Admin)
+  - [ ] Tenant & Organization Structure
+  - [ ] Plans / Subscriptions / Transactions
+  - [ ] Dashboard UX & API integration
+  - [ ] Marketing site (Landing, Pricing)
+  - [ ] Background jobs, caching, webhooks, logging
+  - [ ] Các hạng mục khác đã nhắc tới
+
+### Current Progress:
+- Tự động chia rõ 3 phần:
+  - ✅ **Đã hoàn thành**
+  - 🧩 **Đang tiến hành**
+  - ⏳ **Chưa thực hiện**
+
+### Core Files / Folders (auto-detected):
+/src/app/(marketing)/
+/src/app/(app)/dashboard/
+/src/app/api/subscriptions/
+/payload/collections/Plans.ts
+/payload/collections/Subscriptions.ts
+/lib/kv/redis.ts
+
+### Notes & Next Steps:
+- Tự động rút trích từ các ghi chú kỹ thuật gần đây.
+- Nêu ngắn gọn 2–3 ưu tiên kỹ thuật cần triển khai kế tiếp.
+
+---
+
+⚙️ **Yêu cầu đầu ra:**
+- Xuất nội dung này thành file `.txt` hoặc Markdown có thể tải về.
+- Bảo đảm tôi có thể copy nguyên văn checkpoint này để dán vào hộp thoại mới.
+
+Sau khi xuất xong, hãy xác nhận rằng Checkpoint này có thể được dùng làm “điểm khôi phục” (restore point) cho phiên làm việc kế tiếp.
+
+
+
+
+## 2. CHẠY TẠO CHECKPOINT TẠI HỘP THOẠI MỚI
+##-------------------------------------------
+
+# 🧠 CONTEXT RELOAD – PROJECT CONTINUATION (AUTO MODE – Stable Edition)
+
+Bạn là ChatGPT (GPT-5), vai trò: **SaaS System Architect + Senior Fullstack Engineer + Technical Writer**.
+
+Yêu cầu:
+Tôi sẽ dán ngay bên dưới **Checkpoint Snapshot** của dự án “Xây dựng dự án website SaaS”.  
+Hãy tự động:
+
+1️⃣ **Đọc và khôi phục ngữ cảnh**:
+   - Tự nhận diện: Phase, Version, Tech Stack, Core Modules, Features, Progress.
+   - Nếu checkpoint không có phần nào (Phase/Progress/Notes), tự suy luận từ nội dung tổng thể.
+   - Nếu có nhiều hướng khả thi → đề xuất tối đa 3 lựa chọn hợp lý để tôi chọn.
+
+2️⃣ **Sinh bản tóm tắt tự động (Auto Context Summary)**:
+   - Dự án, mục tiêu, giai đoạn hiện tại.
+   - Tiến độ tổng quát (hoàn thành / đang triển khai / kế hoạch tiếp).
+   - Liệt kê module đang làm việc.
+   - Tất cả được trình bày ngắn gọn, đúng chuẩn Markdown.
+
+3️⃣ **Xác lập môi trường làm việc**:
+   - Ngôn ngữ giải thích: **Tiếng Việt**
+   - Code, schema, file structure: **Tiếng Anh**
+   - Ưu tiên: ✅ Clean Architecture · ✅ Performance · ✅ Security · ✅ Scalability
+   - Phong cách phản hồi: production-grade, có chú thích kỹ thuật, dễ sao chép.
+
+4️⃣ **Sau khi nạp checkpoint**, hỏi tôi một câu duy nhất:
+   > “Anh muốn tiếp tục phát triển module hoặc tính năng nào trước?”
+   kèm 2–3 gợi ý cụ thể (ví dụ: Tenant Management, Billing API, Dashboard UI).
+
+---
+
+📦 Dán checkpoint tại đây:
+⬇️⬇️⬇️  
+[Checkpoint Snapshot từ chat cũ]
+⬆️⬆️⬆️
+
+---
+
+Kết quả mong muốn:
+- Trả về “Auto Context Summary”.
+- Hiển thị thông báo sẵn sàng:
+  ✅ Context loaded successfully – waiting for next task.

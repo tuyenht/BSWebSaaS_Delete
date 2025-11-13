@@ -1,0 +1,13 @@
+{
+  "colors": {
+    "primary": "プライマリカラー",
+    "secondary": "セカンダリカラー"
+  },
+  "sections": {
+    "hero": {
+      "headline": "産業向けソリューション"
+    }
+  }
+}
+
+

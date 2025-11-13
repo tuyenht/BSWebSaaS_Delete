@@ -1,0 +1,337 @@
+# 🧱 CHECKPOINT SNAPSHOT – v6.4 (Realistic Implementation Baseline)
+
+Project: **BSWeb SaaS – Multi-tenant Website SaaS with Next.js + Payload**  
+Phase: **Phase 6 – Realistic Implementation Baseline (Code Generation Ready)**  
+Version: **v6.4 – 2025-11-11**
+
+> This checkpoint describes the **realistic current state** of the project:  
+> - Documentation and schema are highly detailed and consistent.  
+> - A minimal monorepo skeleton exists (`saas-monorepo-min` + `payload-schema`).  
+> - Many modules are **fully designed** but **not yet implemented in code**.  
+> This file is meant to be used as a **restore point + spec** for tools like Cursor / AI codegen to implement the missing code.
+
+---
+
+## 1️⃣ Tech Stack (Realistic, Updated)
+
+### Runtime / Framework
+
+- **Next.js**: **16.0.1** (App Router, RSC, PPR, Turbopack).  
+  - Stable version, fully integrated with Payload 3.63.0.
+- **React**: **19.0.0** (suspense/streaming, server components).
+- **Payload CMS**: **3.63.0** (Next-native, KV, Jobs)  
+  - Includes:
+    - **Polymorphic uploads** (can relate upload field to multiple collections).  
+    - **“Duplicate In [Select Locales]”** UI for multi-locale content duplication.
+- **Node.js**:
+  - **Production target**: Node **22.x / 24.x LTS** (meets Payload requirement Node ≥ 20.9.0).
+  - **Developer machine** (current): Node **25.1.0 (Current)** – supported for local dev, not recommended as primary production runtime yet.
+
+### Database & Storage
+
+- **Database**: PostgreSQL 16 (multi-tenant friendly, with option to use pgBouncer).  
+- **Cache / KV**: Redis 7.x (LRU, tagging for cache invalidation) – used for:
+  - Payload cache adapter (cache tags).
+  - App-level key/value & rate limit.
+  - Next.js cache revalidation via API route `/api/revalidate` (implemented).
+  - Cache tags format: `site:{siteId}:{locale}:{collection}:{identifier?}` (implemented in `packages/shared/cache/cacheTags.ts`).
+- **Storage**:
+  - Local disk in dev.
+  - S3-compatible storage in staging/prod.
+  - Upload path strategy: `{tenantId}/{siteId}/{yyyy}/{MM}/{dd}/...`
+
+### Frontend
+
+- React + Next.js App Router.
+- Tailwind CSS, shadcn/ui, Framer Motion.
+- Theme system:
+  - Light/Dark mode.
+  - Primary color → auto palette 5–7 tones.
+- Page builder sections (Hero, Services, Projects, News, CTA, Form, etc.).
+- Responsive 100%: desktop, tablet, mobile (portrait + landscape).
+
+### Auth & Security
+
+- Payload Auth with multi-tenant roles:
+  - `saasOwner`, `saasAdmin` (platform level)
+  - `siteOwner`, `siteAdmin`, `siteEditor`, `siteTranslator`, `siteViewer` (site level)
+- 2FA for email login, option to enforce for high-risk operations.
+- Social login (Google/Facebook) – design/docs ready.
+- CSRF, rate limit, honeypot, CSP & security headers, upload hardening (MIME, size, path).
+
+### DevOps & Infra
+
+- Monorepo: **pnpm + Turborepo** (planned; skeleton with pnpm workspace).  
+- Docker / Docker Compose for local dev:
+  - `app` (Next + Payload)
+  - `db` (Postgres)
+  - `redis`
+- Healthcheck `/api/healthz` implemented.
+- Prometheus `/metrics` & Grafana – **documented**, to be added as code/config.
+
+### AI / Automation / Observability
+
+- AI layer design: `AiSettings` collection + Assistant API spec.
+- Automation Rules engine: trigger / condition / action – schema + docs ready.
+- Observability: logs, metrics, alerts – documented, not fully implemented in code.
+
+---
+
+## 2️⃣ Module Matrix – Design vs Schema vs Implementation
+
+Legend:  
+- **Design** = functional/architectural design + docs  
+- **Schema** = Payload collections & types are defined  
+- **Implementation** = Next/Payload code, services, UI, hooks are actually wired & runnable
+
+| Module                          | Design & Docs | Schema (Payload) | Implementation (Code) |
+|---------------------------------|---------------|------------------|------------------------|
+| SaaS Core (Tenants, Sites)      | ✅            | ✅               | 🧩 skeleton only       |
+| Domain Routing / Proxy          | ✅            | n/a              | 🧩 skeleton/partial    |
+| Auth & RBAC                     | ✅            | ✅ (Users)       | 🧩 partial (no full flow) |
+| Workflow Engine (content)       | ✅            | ✅ (workflow fields) | ⏳ not wired          |
+| I18n (Admin + Site)             | ✅            | ✅ (locale fields) | ⏳ implementation missing |
+| Theme System                    | ✅            | ✅ (Themes, ThemeSettings, ThemeOverrides) | 🧩 partial UI only |
+| Page Builder & Sections         | ✅            | ✅ (Pages, blocks) | 🧩 basic SectionRenderer only |
+| Posts / Products / Taxonomies   | ✅            | ✅               | ⏳ no real frontend wiring |
+| Forms & Leads                   | ✅            | ✅ (Forms, Leads) | ⏳ endpoints + UI missing |
+| Search Index                    | ✅            | ✅ (SearchIndex) | ✅ hooks implemented |
+| Audit & Logging                 | ✅            | ✅ (AuditEvents) | ✅ hooks implemented |
+| Cache Revalidation              | ✅            | n/a              | ✅ hooks + API route implemented |
+| Automation Rules                | ✅            | ✅ (AutomationRules, AutomationRuns) | ⏳ engine not coded |
+| AI Assistant Layer              | ✅            | ✅ (AiSettings, AssistantRuns) | ⏳ API routes & UI missing |
+| Analytics & Metrics             | ✅            | ✅ (AnalyticsDailyStats) | ⏳ data pipeline missing |
+| Export Standalone Site          | ✅            | ✅ (flags & export config) | ⏳ export service partial/placeholder |
+| Extensions & Marketplace        | ✅            | ✅ (Extensions, SiteExtensions) | ⏳ no UI, no loader yet |
+| Monitoring & Alerting           | ✅            | n/a              | ⏳ `/metrics` not fully wired |
+| Security Hardening              | ✅            | n/a              | 🧩 partly env/policy, no code hooks |
+| Billing / Subscription          | ✅ (conception) | 🧩 early schema (BILLING.md) | ⏳ intentionally postponed |
+| Testing (Unit/E2E/Load)         | ✅ (TESTING-STRATEGY.md) | n/a | ⏳ no test suite yet |
+| DevOps & CI/CD                  | ✅ (DEPLOYMENT.md) | n/a | 🧩 basic scripts, full pipeline pending |
+
+> **Summary**: Documentation & schema are very mature (✅), but **most “smart behavior” is not yet implemented in code**. Current repo is best treated as a **spec + schema + minimal skeleton**.
+
+---
+
+## 3️⃣ Current Progress – Realistic View
+
+### ✅ 3.1 Completed (Design & Schema level)
+
+These are **fully defined**: requirements, behavior, and Payload collections.
+
+- Multi-tenant model: `Tenants`, `Sites`, domain strategy, locales per site.
+- Role & permissions model (RBAC).
+- Workflow model: `workflowState`, versioning, rollback, review rules.
+- I18n strategy:
+  - Admin: language per user, JSON file-based locales.
+  - Site: locales per site, slug per locale, locale licensing.
+  - Use of Payload 3.63.0 feature “Duplicate In [Select Locales]” for multi-locale operations.
+- Schema for content:
+  - `Posts`, `Products`, `Pages`, `Taxonomies`, `Media`, `ContentAttributes`.
+- Forms & Leads schema: flexible field types, validation, automation hook points.
+- SearchIndex schema; AuditEvents, AutomationRules, AutomationRuns, AssistantRuns.
+- Theme & page builder schema: Themes, ThemeSettings, ThemeOverrides, block definitions.
+- Export schema: flags for standalone export & site configuration.
+- AnalyticsDailyStats schema & high-level data model.
+
+### 🧩 3.2 Skeleton / Partially Implemented
+
+These **exist at least as minimal code or placeholder** in the skeleton repo:
+
+- Monorepo layout with `apps/saas` and `packages/*`.
+- Basic Next.js App Router app:
+  - `app/layout.tsx`
+  - `app/page.tsx` (landing)
+  - Example dynamic route for site home (using SectionRenderer with mock data).
+- `packages/frontend`:
+  - `SectionRenderer` + `HeroSection` implemented as simple components.
+- `packages/cms/collections`:
+  - Full set of collections from `payload-schema` present as TS files.
+- Basic `logger` in `packages/shared/logger.ts`.
+- `apps/saas/app/api/healthz/route.ts` returns simple JSON healthcheck.
+- `apps/saas/payload.config.ts` exists but needs to be wired to:
+  - Full collections.
+  - Postgres/Redis adapters in a robust way.
+
+### ⏳ 3.3 Not Yet Implemented (Code)
+
+These are described in docs/checkpoints but not yet coded:
+
+- Hooks:
+  - Automation rules execution on triggers (form submit, publish, etc.).
+  - (Note: Search index upsert and audit event logging are now implemented in Pages, Posts, Products collections.)
+- AI integration:
+  - Actual calls to OpenAI or other providers based on `AiSettings` (per-site/global).
+  - Assistant API routes and UI.
+- Analytics:
+  - Collection & aggregation of metrics into `AnalyticsDailyStats`.
+  - Dashboard UI in admin.
+- Export engine:
+  - Service that bundles standalone site (Next app + JSON data + seed script).
+  - Downloadable zip from admin.
+- Monitoring:
+  - `/metrics` endpoint exposing Prometheus metrics.
+  - Grafana dashboard config file(s).
+- Billing and customer subscription UI/logic.
+- Test suites:
+  - Unit tests for services.
+  - Integration tests for API.
+  - E2E via Playwright.
+  - Load tests via k6.
+
+---
+
+## 4️⃣ Core Files / Folders (Target Layout)
+
+> Note: Some items are **planned** but not yet present on disk. Tools like Cursor can use this section to create missing files.
+
+### 4.1 Monorepo Structure
+
+```text
+root/
+  apps/
+    saas/                     # Next.js + Payload embedded (SaaS control plane + sites)
+    # standalone/             # (planned) standalone runtime for exported sites
+
+  packages/
+    cms/                      # Payload config & collections + services
+      collections/            # All collection configs (from payload-schema)
+      src/
+        services/
+          searchIndex.ts
+          audit.ts
+          cacheRevalidation.ts
+          exportSite.ts
+          automation.ts
+          assistant.ts
+    frontend/                 # UI components, sections, SectionRenderer
+      components/
+      sections/
+    shared/                   # Logger, cache, rate-limit, storage, routing
+    i18n/                     # i18n config + JSON locales (planned on-disk)
+
+  docs/                       # All *.md docs (SCHEMA-MASTER, ARCHITECTURE, etc.)
+  checkpoint/                 # CHECKPOINT_v6.3, v6.4-realistic, etc.
+  package.json                # root scripts
+  pnpm-workspace.yaml         # pnpm workspace config
+  docker-compose.yml          # local dev infra
+```
+
+### 4.2 Key Files to Implement / Fix
+
+- `apps/saas/payload.config.ts`  
+  - Must import all collections from `packages/cms/collections`.
+  - Must configure `serverURL`, `secret`, `db` adapter, optional `cache` adapter.
+
+- `apps/saas/app/api/payload/[...route]/route.ts`  
+  - Currently a placeholder; should be wired to Payload's Next-native handler.
+
+- `apps/saas/app/api/revalidate/route.ts`  
+  - Implemented: Cache revalidation API route with Bearer token authentication.
+  - Called by Payload hooks to invalidate Next.js cache when content changes.
+
+- `apps/saas/tsconfig.json` + root `tsconfig.json`  
+  - Needs path aliases for `@bsweb/frontend`, `@bsweb/cms`, `@bsweb/shared` or direct relative imports.
+
+- `packages/i18n` (to be created on disk)  
+  - `config/locales.ts`, `config/i18n-config.ts`, `locales/{lang}/{namespace}.json`.
+
+---
+
+## 5️⃣ Documentation Set (State at v6.4)
+
+The following docs are considered **source of truth** for design & behavior:
+
+- `SCHEMA-MASTER.md` – master schema for all collections & relationships.
+- `HANDBOOK.md` – developer handbook, project overview, conventions.
+- `project-manifest.md` – project manifest, modules, tech stack, and roadmap.
+- `ARCHITECTURE.md` – system architecture (Next + Payload + infra).
+- `PROJECT-RULES.md` – coding standards, naming, review rules.
+- `TESTING-STRATEGY.md` – levels & scope of testing.
+- `DEPLOYMENT.md` – Docker, Cloud Run / Vercel deployment notes.
+- `performance.md` – performance optimization guidelines.
+- `UPGRADING-PAYLOAD.md` – how to run `pnpm payload:upgrade` safely.
+- `SECURITY.md` – auth, RBAC, 2FA, rate limits, WAF, secrets handling.
+- `THEME-SYSTEM.md` – theme architecture, sections, responsive behavior.
+- `AUTOMATION.md` – AutomationRules design (triggers, conditions, actions).
+- `AI-ASSISTANT.md` – AI assistant design, integration points.
+- `CACHE-STRATEGY.md` – cache layers (CDN, Redis, Payload cache tags).
+- `BILLING.md` – conceptual billing model (phase later).
+- `MONITORING.md` – metrics & alerting design.
+- `I18N.md` – full i18n strategy (admin + site, namespaces, locales).
+- `ONBOARDING.md` – tenant/site onboarding flows.
+- `ANALYTICS.md` – analytics model & dashboard concepts.
+- `EXPORT.md` – standalone export flow & structure.
+- `FORMS.md` – form builder & lead pipeline.
+- `WORKFLOW.md` – workflow engine, states, role matrix.
+
+These docs **may describe functionality that is not yet implemented in code** but should be treated as the **contract** for future implementation.
+
+---
+
+## 6️⃣ Guidance for Code Generation Tools (Cursor, etc.)
+
+This checkpoint is designed to be read by AI-powered code tools.
+
+### 6.1 Priorities for Initial Implementation
+
+When generating code, tools should prioritize:
+
+1. **Make the repo run cleanly**:
+   - `pnpm install` at root works.
+   - `pnpm dev` starts Next.js dev server for `apps/saas` without TypeScript or runtime errors.
+   - Health check at `/api/healthz` works.
+
+2. **Wire Payload with full schema**:
+   - `payload.config.ts` imports all collections from `packages/cms/collections`.
+   - Use Postgres adapter (`@payloadcms/db-postgres`) when `DATABASE_URI` is set.
+   - Provide a fallback dev mode or clear error if DB not reachable.
+
+3. **Fix imports / path aliases**:
+   - Ensure `SectionRenderer` and sections import correctly from `packages/frontend`.
+   - No “Cannot find module” errors from TS or Next.
+
+4. **Implement minimal flows**:
+   - Render a real `Page` from Payload on a site route.
+   - Render sections from `Page.sections` using `SectionRenderer`.
+   - Implement a simple `Forms` submit endpoint storing data into `Leads`.
+
+5. **Defer complex modules**:
+   - Automation engine, AI assistant, analytics, billing, and monitoring can be implemented later, as they have full docs already.
+
+### 6.2 Constraints & Non-goals for v6.4
+
+- Do **not** try to implement everything at once.  
+- Focus on a stable core:
+  - Multi-tenant sites.
+  - Theme + page builder for at least one theme (`company-industrial`).
+  - Basic SEO from content.
+  - Forms → Leads collection pipeline.
+
+---
+
+## 7️⃣ Next Steps – Phase 6.5 (Implementation Focus)
+
+Planned sequence after this checkpoint:
+
+1. **Finalize monorepo wiring** (tsconfig, path aliases, package.json for `packages/*`).  
+2. **Implement Payload Next-native integration**:
+   - `/api/payload/[...route]` handler.
+   - `/admin` route or dedicated admin entry.
+3. **Bind Page builder to frontend**:
+   - Fetch Pages by slug + locale + site.
+   - Render all core sections with Tailwind/shadcn.
+4. **Implement SearchIndex & Audit hooks**:
+   - On create/update/publish for Posts/Products/Pages.
+   - (Note: Search index and audit hooks are now implemented, along with cache revalidation hooks.)
+5. **Implement Forms submit flow**:
+   - Public endpoint, spam protection (rate limit, honeypot).
+   - Store into Leads, optional email/webhook integration.
+6. **Wire basic analytics counters**:
+   - Page view counters (per Page + per Site).
+
+After Phase 6.5, the project should evolve from **“spec + skeleton”** to a **running SaaS CMS** with real tenant/site content flows.
+
+---
+
+✅ **This CHECKPOINT_v6.4-realistic can be used as a reliable restore point & spec for further implementation and for guiding AI/code-generation tools to complete the project.**

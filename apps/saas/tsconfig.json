@@ -1,0 +1,29 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["./*"],
+        "@bsweb/frontend/*": ["../../packages/frontend/*"],
+        "@bsweb/cms/*": ["../../packages/cms/*"],
+        "@bsweb/shared/*": ["../../packages/shared/*"],
+        "@bsweb/shared": ["../../packages/shared/index.ts"],
+        "@bsweb/i18n/*": ["../../packages/i18n/*"],
+        "@bsweb/i18n": ["../../packages/i18n/index.ts"]
+      },
+  
+      "jsx": "preserve",
+      "types": ["node"],
+      "incremental": true,
+      "plugins": [{ "name": "next" }]
+    },
+    "include": [
+      "next-env.d.ts",
+      "**/*.ts",
+      "**/*.tsx",
+      ".next/types/**/*.ts",
+      "./**/*"
+    ],
+    "exclude": ["node_modules"]
+  }
+  

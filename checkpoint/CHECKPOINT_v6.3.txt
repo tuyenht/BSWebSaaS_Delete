@@ -1,0 +1,206 @@
+## [CHECKPOINT SNAPSHOT]
+**Phase:** Phase 6 – Final Integration & Demo Readiness  
+**Version:** v6.3 – 2025-11-10  
+
+---
+
+### 1️⃣ Tech Stack Overview
+
+#### Runtime / Framework
+- **Next.js 16.x** – App Router, React Server Components, Partial Pre-Rendering, Cache Tags, Turbopack
+- **Payload CMS 3.63.0** – Next-native integration, background Jobs, KV support
+- **Node.js ≥ 20.x**
+
+#### Database & Storage
+- **PostgreSQL** – multi-tenant schema, pgBouncer pooling
+- **Redis** – production cache/KV; memory fallback in dev
+- **Storage** – local or S3-compatible; upload prefix per Tenant/Site
+
+#### Frontend
+- **React 19.x + TailwindCSS + shadcn/ui + Framer Motion**
+- Theme system: light/dark, dynamic palette (5–7 colors), responsive layout, motion presets
+- UI shared library: SectionRenderer, Grid/Slider/Parallax utilities
+
+#### Auth & Security
+- Payload Auth (multi-tenant + per-site roles)
+- Social login (Google, Facebook) + 2FA on high-risk actions
+- CSRF, Rate-limit, Honeypot, CSP, MIME upload isolation
+
+#### DevOps & Infra
+- Docker & Docker Compose + Turborepo monorepo
+- Healthcheck `/healthz`, JSON logs, Prometheus `/metrics`
+- Export standalone bundle (Next + Payload)
+- Auto restart, alert webhooks (Discord/Slack)
+
+#### AI & Automation
+- AI SEO, AI Translate, AI Summary (hook-ready)
+- Automation Rules (trigger-condition-action)
+- Assistant API layer (LLM-based content ops)
+- Structured logs (tenantId, siteId, latency, errorType)
+
+---
+
+### 2️⃣ Features & Modules Summary
+
+#### 2.1 Multi-Tenant & Domain Routing
+- Tenant ↔ Site model, domain/subdomain routing
+- Isolation of DB, uploads, settings per Site
+- Export Standalone bundle per Site
+- Configurable site license by locale
+
+#### 2.2 Auth, RBAC & Workflow
+- Roles: saasOwner, saasAdmin, siteOwner, siteAdmin, siteEditor, siteTranslator, siteViewer
+- Workflow: Draft → Pending → Published (+ custom steps)
+- Export allowed only by saasOwner
+- 2FA required for email login
+
+#### 2.3 I18n & Localization
+- Admin language per user; site locales licensed per site
+- Locale structure: `/packages/i18n/locales/{lang}/{namespace}.json`
+- Namespaces: admin-*, site-*, theme-*, validation, common
+- Slug mapping: `/tin-tuc`, `/news`, `/du-an`, `/projects`, `/tuyen-dung`, `/careers`, `/san-pham`, `/products`
+- Auto detection; no hard-coded strings
+
+#### 2.4 Content Model & Theme System
+- Collections: Tenants, Sites, Themes, Industries, DemoContentSets, Taxonomies, Posts, Products, Pages, Settings, ThemeSettings, AiSettings, ThemeOverrides, ContentAttributes, Media, Forms, Leads, SearchIndex, AuditEvents, Extensions, SiteExtensions
+- Theme `company-industrial` base: theme.config.ts, pageBlueprints, default sections
+- Page builder sections: Hero, ServicesGrid, CapabilitiesGrid, ProjectsCarousel, NewsTabs, PartnersCarousel, CTA, Form
+- Device visibility, layout types (row/grid/slider), motion presets
+- 100% responsive across breakpoints
+
+#### 2.5 SEO, Search, Preview & Staging
+- SEO: Auto meta/OG/LD+JSON, sitemap.xml, RSS per locale
+- Search: Active pipeline with re-index hooks; `/api/search` endpoint
+- Preview: JWT preview tokens + Draft mode
+- Staging: Per-site staging domain; publish triggers cache revalidation
+
+#### 2.6 Forms, Leads & Automation
+- Form builder (contact, quote, recruitment)
+- Leads collection with statuses & assignment
+- Rate-limit, honeypot protection
+- Automation triggers: onFormSubmit, onLeadCreated → email/webhook/AI action
+
+#### 2.7 Logging, Audit & Security
+- AuditEvents for CRUD, publish, login fail, export
+- Structured JSON logs (tenantId, siteId, userId)
+- CSRF, rate-limit, CSP, upload hardening
+- Secret scrubber for sensitive data
+
+#### 2.8 DevOps, Export & Extensions
+- Scripts: dev, build, seed:demo, db:migrate
+- Docker healthcheck, metrics, CI workflow
+- Export API `/api/sites/[id]/export` → ZIP (code + data + docker-compose)
+- Extension registry `ext:*` future marketplace-ready
+
+#### 2.9 AI & Automation Layer
+- Engine completed: triggers + actions fully working
+- Triggers: form.submit, lead.created, post.published, export.completed
+- Actions: ai.reply, ai.summary, ai.seo, ai.translate
+- Logging in AutomationRuns; rate-limit, loop-protection, UI preview
+
+#### 2.10 Observability, Performance & Testing
+- CDN cache tags, Redis TTL (5min)
+- Sharp image pipeline, ISR + PPR
+- Prometheus `/metrics`, Grafana dashboards
+- Load test: k6; E2E test: Playwright (login, form, export, publish, search)
+- Alerting via webhook
+- Lighthouse >95 SEO, >90 performance target
+
+---
+
+### 3️⃣ Project Progress Summary
+
+#### ✅ Completed / Production-ready
+- Multi-tenant architecture & routing  
+- Auth, RBAC, Workflow  
+- i18n & localization  
+- Theme system + page builder  
+- SEO / Search / Preview / Staging  
+- Forms, Leads, Automation engine  
+- Export bundle system  
+- Security & audit  
+- DevOps & CI/CD pipeline  
+- E2E testing & monitoring  
+- AI Assistant & automation integration  
+
+#### 🧩 Under optimization / Enhancement
+- Assistant metrics tracking (for Billing readiness)
+- Search UI improvements (highlight + typeahead)
+- Automation template presets (for quick setup)
+- Observability dashboards refinements
+
+#### ⏳ Deferred (Next Phase)
+- Billing & Subscription module
+- Analytics dashboard (KPI, usage)
+- Marketplace extensions UI
+
+---
+
+### 4️⃣ Core Structure
+
+**Monorepo Layout**
+```
+apps/
+  saas/            # Next 16 + Payload embedded
+  standalone/      # Standalone site runtime
+packages/
+  cms/             # Payload config & collections
+  frontend/        # Components, Sections, Renderers
+  themes/company-industrial/
+  i18n/            # Shared i18n engine
+  shared/          # Cache, rateLimit, logger, routing
+docs/              # Documentation suite (.md)
+```
+
+**Key Routes**
+- `/api/healthz` – Healthcheck  
+- `/api/search` – Site-level search  
+- `/api/sites/[id]/export` – Export bundle  
+- `/img/[...path]` – Dynamic image handler  
+
+---
+
+### 5️⃣ Documentation Suite
+- HANDBOOK.md  
+- ARCHITECTURE.md  
+- ONBOARDING.md  
+- SECURITY.md  
+- DEPLOYMENT.md  
+- BILLING.md  
+- MONITORING.md  
+- AUTOMATION.md  
+- AI-ASSISTANT.md  
+- ANALYTICS.md  
+- EXPORT.md  
+- THEME-SYSTEM.md  
+- I18N.md  
+- WORKFLOW.md  
+- FORMS.md  
+- TESTING-STRATEGY.md  
+- UPGRADING-PAYLOAD.md  
+- CACHE-STRATEGY.md  
+
+All verified complete and in sync with current implementation.
+
+---
+
+### 6️⃣ Notes & Next Steps
+
+**Recent updates:**
+- Completed Search Index, Automation Engine, E2E test, Security polish  
+- AI Assistant operational with configurable OpenAI key (global + per-site override)
+- Finalized i18n folder strategy and per-locale slug mapping
+- Implemented rate-limited automation logging and audit export
+- Fully documented repo (docs suite above)
+
+**Next Technical Priorities**
+1. Implement Billing & Subscription logic (post-demo)
+2. Add Analytics dashboard visualizations
+3. Release automation templates library
+4. Finalize performance regression tests & metrics export
+5. Prepare public demo site + admin showcase
+
+---
+
+✅ **Checkpoint Snapshot v6.3 – Final Integration Ready**  
+This file represents the official restore point of the SaaS CMS project as of 2025‑11‑10.

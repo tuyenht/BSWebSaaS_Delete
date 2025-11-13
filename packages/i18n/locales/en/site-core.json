@@ -1,0 +1,13 @@
+{
+  "navigation": {
+    "home": "Home",
+    "services": "Services",
+    "projects": "Projects",
+    "contact": "Contact"
+  },
+  "footer": {
+    "rights": "© {{year}} {{brand}}. All rights reserved."
+  }
+}
+
+

@@ -1,0 +1,13 @@
+{
+  "plans": {
+    "free": "Gói miễn phí",
+    "pro": "Gói chuyên nghiệp",
+    "enterprise": "Gói doanh nghiệp"
+  },
+  "actions": {
+    "upgrade": "Nâng cấp",
+    "managePayment": "Quản lý thanh toán"
+  }
+}
+
+

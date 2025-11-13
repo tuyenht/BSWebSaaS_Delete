@@ -1,0 +1,175 @@
+## [CHECKPOINT SNAPSHOT]
+Phase: Phase 5 – Hardening, Export & Final CMS Integration
+Version: v5.1 – 2025-11-10
+
+### 1️⃣ Tech Stack
+- **Runtime / Framework**
+  - Next.js 16.x (App Router, React Server Components, Turbopack, Partial Pre-Rendering, Cache Tags)
+  - Payload CMS 3.63.0 (Next-native integration, KV, Jobs)
+  - Node.js ≥ 20.x
+
+- **Database & Storage**
+  - PostgreSQL (multi-tenant friendly)
+  - Redis (prod KV) / In-memory (dev)
+  - Storage: Local / S3-compatible via Payload upload + custom path isolation per tenant/site
+
+- **Frontend**
+  - React 19.x, Tailwind CSS, shadcn/ui, Framer Motion
+  - Theme System: Light/Dark + Primary color palette (auto generate 5–7 color harmonies)
+  - Responsive layout 100% (desktop/tablet/mobile – portrait & landscape)
+  - Animation presets (fade-in, slide-up, zoom, parallax)
+
+- **Auth & Security**
+  - Payload Auth (multi-tenant + per-site roles)
+  - Social Login (Google / Facebook / …) + 2FA cho hành động nhạy cảm
+  - CSRF / Rate limit / Honeypot / Security headers + CSP
+  - Upload policy theo tenant/site, phân lập đường dẫn và MIME types
+
+- **DevOps & Infra**
+  - Docker / Docker Compose / Turborepo monorepo
+  - Healthcheck `/healthz`, logging JSON, metrics `/metrics`
+  - Export Standalone site (bundle code + data JSON + seed script)
+  - Prometheus-compatible metrics & Grafana dashboard ready
+
+- **AI / Automation / Observability**
+  - AI SEO + Auto Translate (interface ready, provider configurable)
+  - Automation Rules (trigger / condition / action)
+  - Assistant API layer (for content generation & system query)
+  - Structured logs (tenantId, siteId, userId, latency, errorType)
+
+---
+
+### 2️⃣ Features & Modules Summary
+
+#### SaaS Multi-Tenant & Domain Routing
+- Tenant / Site model: mỗi tenant có nhiều site độc lập.
+- Domain mapping: subdomain & custom domain → site.
+- Isolation: data, media, config per site.
+- Export Standalone site (code + data tách rời SaaS).
+
+#### Auth, RBAC & Workflow
+- Role system: `saasOwner`, `saasAdmin`, `siteOwner`, `siteAdmin`, `siteEditor`, `siteTranslator`, `siteViewer`.
+- Workflow content: Draft → Pending → Published (tùy biến thêm step).
+- Permission rule: user có quyền thấp hơn workflow hiện tại chỉ được xem.
+- Quyền Export: chỉ khi được cấp bởi `saasOwner`.
+- High-risk 2FA bắt buộc cho đăng nhập email.
+
+#### I18n & Ngôn ngữ
+- Phân biệt:
+  - Website locales (license per site) vs. Admin language (per user)
+- File i18n: `admin.vi.json`, `admin.en.json`, … tự động phát hiện.
+- Slug mapping theo locale: `/tin-tuc`, `/du-an`, `/tuyen-dung`, `/san-pham`, `/news`, `/projects`, `/careers`, `/products`
+- Full i18n cho NotFound, GlobalError, Label, Workflow, Menu, UI strings.
+
+#### Content Model & Theme System
+- Collections chính:
+  - Tenants, Sites, Themes, Industries, DemoContentSets
+  - Taxonomies, Posts (multi-type: news, project, job, video)
+  - Products, Pages, Settings, ThemeSettings, AiSettings, ThemeOverrides
+  - ContentAttributes, Media, Forms, Leads, SearchIndex, AuditEvents, Extensions, SiteExtensions.
+- Theme System:
+  - Theme `company-industrial` với `theme.config.ts`, `pageBlueprints`, `default sections`
+  - Auto-sync theme config → collection `themes`
+  - Auto generate 5–7 màu gợi ý theo màu chính
+- Page Builder:
+  - Sections: Hero, ServicesGrid, CapabilitiesGrid, ProjectsCarousel, NewsTabs, PartnersCarousel, CTA, Form
+  - Visibility control per device (Desktop/Tablet/Mobile)
+  - LayoutType: row / grid / slider
+  - Animation Presets: fade-in, slide-up, zoom, parallax, rotate, scaleIn
+  - Responsive full layout (desktop/tablet/mobile, portrait & landscape)
+  - Optimize style saving: JSON compact per section + Tailwind runtime class merge
+
+#### SEO, Search, Preview & Staging
+- SEO: auto meta title/description/OG từ nội dung, JSON-LD, canonical, sitemap.xml, RSS feed per locale.
+- Search: lightweight `search-index` collection, filter per type, locale, keyword.
+- Preview & Staging:
+  - Draft mode, JWT preview token, staging domain per site.
+  - Publish trigger → auto revalidate cache tags.
+
+#### Forms, Leads & Automation
+- Form builder (liên hệ, báo giá, tuyển dụng, tùy chỉnh field)
+- Leads collection (mới / đang xử lý / hoàn tất / thất bại)
+- Rate limit + honeypot chống spam
+- Automation Rules: onFormSubmit → webhook/email/task assign
+
+#### Logging, Audit & Security
+- AuditEvents: CRUD, publish, role, export, login fail
+- Structured logging JSON: tenantId, siteId, userId
+- Rate limit login/form/export, CSRF, CSP, isolation
+
+#### DevOps, Export & Extensions
+- Scripts: `dev`, `build`, `seed:demo`, `db:migrate`
+- Dockerfile, docker-compose với healthcheck `/healthz`
+- Export: API `/api/sites/[id]/export` → bundle zip code + data
+- Extension registry `ext:*` cho marketplace tương lai
+
+#### Performance & Observability
+- CDN cache tags, Redis KV, sharp image pipeline
+- Partial Pre-rendering (PPR) + React streaming
+- Prometheus `/metrics`, auto restart khi lỗi liên tục
+- Cache tags: site:{id}:{locale}:{collection}
+- Logs JSON + Alert webhook (Discord/Slack)
+
+#### Intelligent Assistant & Automation Layer
+- Assistant API cho phép query nội dung / sinh bài tự động.
+- Automation Rules hỗ trợ form lead, publish event, SEO optimize.
+
+---
+
+### 3️⃣ Current Progress
+
+✅ **Đã hoàn thành**
+- Multi-tenant kiến trúc, domain routing, RBAC + workflow
+- I18n toàn hệ thống (frontend + admin)
+- Theme & page builder responsive 100%
+- Auto SEO & sitemap generator
+- Export Standalone bundle
+- Rate limiting, CSRF, CSP
+- Palette generator + animation presets
+
+🧩 **Đang phát triển**
+- Search index pipeline
+- Audit & Logging dashboard
+- Form automation hooks
+- Admin UI refinement cho slider config
+
+⏳ **Để phase sau**
+- Billing / Subscription
+- Analytics dashboard
+- Marketplace UI
+- Conversational AI Assistant
+
+---
+
+### 4️⃣ Core Files / Folders
+/apps/saas/ – Next.js 16 + Payload embed
+/apps/standalone/ – standalone site export
+/packages/cms/ – Payload config & collections
+/packages/frontend/ – UI, sections, layouts
+/packages/themes/company-industrial/ – Theme base
+/packages/shared/ – storage, cache, rateLimit, logger, routing
+
+Payload collections:
+Users.ts, Tenants.ts, Sites.ts, Themes.ts, Industries.ts,
+DemoContentSets.ts, Taxonomies.ts, Posts.ts, Products.ts,
+Pages.ts, Settings.ts, ThemeSettings.ts, AiSettings.ts,
+ThemeOverrides.ts, ContentAttributes.ts, Media.ts, Forms.ts,
+Leads.ts, SearchIndex.ts, AuditEvents.ts, Extensions.ts, SiteExtensions.ts
+
+Services & Helpers:
+applyThemeToSite.ts, applyDemoContentForSite.ts,
+searchIndex.ts, audit.ts, exportSite.ts, storage.ts,
+cacheTags.ts, rateLimit.ts, logger.ts, routing/paths.ts
+
+---
+
+### 5️⃣ Notes & Next Steps
+- Hoàn thiện Search Index + Automation hook
+- Viết tài liệu export standalone
+- Thêm test e2e cho CMS core
+- Chuẩn bị tích hợp Analytics + Billing
+- Finalize AI Assistant integration (v6.x)
+
+---
+
+✅ Checkpoint Snapshot này có thể dùng làm điểm khôi phục (restore point) cho các phiên làm việc tiếp theo của dự án SaaS.

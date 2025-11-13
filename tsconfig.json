@@ -1,0 +1,34 @@
+{
+    "compilerOptions": {
+      "target": "ES2022",
+      "lib": ["DOM", "DOM.Iterable", "ES2022"],
+  
+      "strict": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "noEmit": true,
+      "isolatedModules": true,
+      "esModuleInterop": true,
+  
+      "module": "ESNext",
+      "moduleResolution": "Bundler",
+      "resolveJsonModule": true,
+      "verbatimModuleSyntax": true,
+  
+      "baseUrl": ".",
+      "paths": {
+        "@bsweb/frontend": ["packages/frontend/index.ts"],
+        "@bsweb/frontend/*": ["packages/frontend/*"],
+        "@bsweb/cms": ["packages/cms/index.ts"],
+        "@bsweb/cms/*": ["packages/cms/*"],
+        "@bsweb/shared": ["packages/shared/index.ts"],
+        "@bsweb/shared/*": ["packages/shared/*"],
+        "@bsweb/i18n": ["packages/i18n/index.ts"],
+        "@bsweb/i18n/*": ["packages/i18n/*"]
+      }
+    },
+    "include": ["apps", "packages"],
+    "exclude": ["node_modules", "**/dist", "**/.next"]
+  }
+  
+

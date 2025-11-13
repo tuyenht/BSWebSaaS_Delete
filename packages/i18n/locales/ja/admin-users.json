@@ -1,0 +1,17 @@
+{
+  "list": {
+    "title": "ユーザー",
+    "empty": "ユーザーがまだ作成されていません。"
+  },
+  "form": {
+    "email": {
+      "label": "メールアドレス",
+      "placeholder": "name@company.com"
+    },
+    "role": {
+      "label": "ロール"
+    }
+  }
+}
+
+

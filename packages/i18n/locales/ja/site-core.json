@@ -1,0 +1,13 @@
+{
+  "navigation": {
+    "home": "ホーム",
+    "services": "サービス",
+    "projects": "プロジェクト",
+    "contact": "お問い合わせ"
+  },
+  "footer": {
+    "rights": "© {{year}} {{brand}}. 無断転載禁止。"
+  }
+}
+
+

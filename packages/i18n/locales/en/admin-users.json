@@ -1,0 +1,17 @@
+{
+  "list": {
+    "title": "Users",
+    "empty": "No user has been created yet."
+  },
+  "form": {
+    "email": {
+      "label": "Email",
+      "placeholder": "name@company.com"
+    },
+    "role": {
+      "label": "Role"
+    }
+  }
+}
+
+

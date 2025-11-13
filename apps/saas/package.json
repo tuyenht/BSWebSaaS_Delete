@@ -1,0 +1,28 @@
+{
+  "name": "saas-app",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@bsweb/cms": "workspace:*",
+    "@bsweb/frontend": "workspace:*",
+    "@bsweb/shared": "workspace:*",
+    "@bsweb/i18n": "workspace:*",
+    "@payloadcms/next": "3.63.0",
+    "@payloadcms/db-postgres": "3.63.0",
+    "next": "16.0.1",
+    "payload": "3.63.0",
+    "pg": "^8.13.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.3",
+    "@types/react-dom": "^19.2.2",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@bsweb/shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./logger": "./logger.ts",
+    "./cache": "./cache.ts",
+    "./rateLimit": "./rateLimit.ts",
+    "./storage": "./storage.ts",
+    "./env": "./env.ts",
+    "./validation": "./validation.ts",
+    "./types": "./types.ts",
+    "./cache/*": "./cache/*.ts",
+    "./routing/*": "./routing/*.ts",
+    "./assistant/*": "./assistant/*.ts",
+    "./auth/*": "./auth/*.ts"
+  },
+  "dependencies": {
+    "ioredis": "^5.4.1"
+  },
+  "peerDependencies": {
+    "payload": ">=3.63.0"
+  }
+}
+
+
+
+

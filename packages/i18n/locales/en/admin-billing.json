@@ -1,0 +1,13 @@
+{
+  "plans": {
+    "free": "Free plan",
+    "pro": "Pro plan",
+    "enterprise": "Enterprise plan"
+  },
+  "actions": {
+    "upgrade": "Upgrade",
+    "managePayment": "Manage payment"
+  }
+}
+
+

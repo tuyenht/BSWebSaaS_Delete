@@ -1,0 +1,13 @@
+{
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "welcome": "Chào mừng trở lại, {{name}}"
+  },
+  "navigation": {
+    "tenants": "Tenant",
+    "sites": "Site",
+    "themes": "Giao diện"
+  }
+}
+
+

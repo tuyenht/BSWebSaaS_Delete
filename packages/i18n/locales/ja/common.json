@@ -1,0 +1,14 @@
+{
+  "app": {
+    "name": "BSWebSaaS"
+  },
+  "actions": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "close": "閉じる"
+  },
+  "messages": {
+    "unknownSection": "セクション{{key}}はまだ対応していません。"
+  }
+}
+

@@ -1,0 +1,19 @@
+{
+  "name": "@bsweb/frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./SectionRenderer": "./SectionRenderer.ts",
+    "./sections/HeroSection": "./sections/HeroSection.ts"
+  },
+  "dependencies": {
+    "@bsweb/i18n": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0"
+  }
+}
+
