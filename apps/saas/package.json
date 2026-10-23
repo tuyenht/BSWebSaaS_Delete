@@ -13,7 +13,7 @@
     "@bsweb/i18n": "workspace:*",
     "@payloadcms/next": "3.63.0",
     "@payloadcms/db-postgres": "3.63.0",
-    "next": "16.0.1",
+    "next": "16.4.1",
     "payload": "3.63.0",
     "pg": "^8.13.0",
     "react": "19.0.0",
